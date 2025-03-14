@@ -1,11 +1,11 @@
 package com.trade.store.repository;
 
-import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.trade.store.model.TradeAudit;
 
 public interface TradeAuditRepository extends MongoRepository<TradeAudit, Long> {
-    List<TradeAudit> findByTradeId(String tradeId);
+	Optional<TradeAudit> findByTradeId(String tradeId);
 }

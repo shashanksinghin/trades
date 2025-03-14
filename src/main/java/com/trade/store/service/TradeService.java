@@ -1,7 +1,7 @@
 package com.trade.store.service;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Optional;
 
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -25,7 +25,7 @@ public class TradeService {
 
     @KafkaListener(topics = "trade-store-topic", groupId = "trade-group")
     public void processTrade(Trade trade) {
-        List<Trade> existingTrades = tradeRepository.findByTradeId(trade.getTradeId());
+    	Optional<Trade> existingTrades = tradeRepository.findByTradeId(trade.getTradeId());
 
         existingTrades.stream().max((t1, t2) -> Integer.compare(t1.getVersion(), t2.getVersion()))
                 .ifPresent(existingTrade -> {

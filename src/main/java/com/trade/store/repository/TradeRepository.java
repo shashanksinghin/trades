@@ -1,9 +1,11 @@
 package com.trade.store.repository;
 
-import com.trade.store.model.Trade;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.List;
+
+import com.trade.store.model.Trade;
 
 public interface TradeRepository extends JpaRepository<Trade, Long> {
-	List<Trade> findByTradeId(String tradeId);
+	Optional<Trade> findByTradeId(String tradeId);
 }
