@@ -1,0 +1,36 @@
+server:
+  port:
+    8080
+spring:
+  application:
+    name: trades
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: trade-store-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.trade.store.model"
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+  datasource:
+    url: jdbc:postgresql://localhost:5432/tradeDB
+    username: postgres
+    password: password
+    driverClassName: org.postgresql.Driver
+  sql:
+    init:
+      platform: postgres
+  data:
+      mongodb:
+        username: test
+        password: passwordvalue
+        uri: mongodb://localhost:27017/db
