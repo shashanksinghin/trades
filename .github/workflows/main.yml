@@ -50,6 +50,7 @@ jobs:
         run: mvn clean test
   
   pmd-code-scan:
+    needs: build-test
     permissions:
       contents: read # for actions/checkout to fetch code
       security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
@@ -75,6 +76,7 @@ jobs:
           sarif_file: pmd-report.sarif
 
   Analysis:
+    needs: pmd-code-scan
     runs-on: ubuntu-latest
 
     steps:
@@ -104,6 +106,7 @@ jobs:
 
   build:
     name: Security Scan
+    needs: Analysis
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -139,7 +142,7 @@ jobs:
           
   docker-build:
     name: Build & Push Docker Image
-    needs: build-test
+    needs: Security Scan
     runs-on: ubuntu-latest
 
     steps:
