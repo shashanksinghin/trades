@@ -75,7 +75,8 @@ jobs:
         with:
           sarif_file: pmd-report.sarif
 
-  Analysis:
+  analysis:
+    name: Analysis
     needs: pmd-code-scan
     runs-on: ubuntu-latest
 
@@ -104,9 +105,9 @@ jobs:
             # Adds more detail to both client and server-side analysis logs, activating DEBUG mode for the scanner, and adding client-side environment variables and system properties to the server-side log of analysis report processing.
             #-Dsonar.verbose= # optional, default is false
 
-  build:
+  security-scan:
     name: Security Scan
-    needs: Analysis
+    needs: analysis
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -142,7 +143,7 @@ jobs:
           
   docker-build:
     name: Build & Push Docker Image
-    needs: Security Scan
+    needs: security-scan
     runs-on: ubuntu-latest
 
     steps:
