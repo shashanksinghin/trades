@@ -8,7 +8,7 @@ class TradeServiceTest {
 
 	@Test
 	void testTradeService() {
-//		fail("Not yet implemented");
+		fail("Not yet implemented");
 	}
 
 	@Test
