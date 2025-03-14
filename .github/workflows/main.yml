@@ -48,7 +48,60 @@ jobs:
 
       - name: Build & Run Tests
         run: mvn clean test
+  
+  pmd-code-scan:
+    permissions:
+      contents: read # for actions/checkout to fetch code
+      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
+      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+      - name: Run PMD
+        id: pmd
+        uses: pmd/pmd-github-action@967a81f8b657c87f7c3e96b62301cb1a48efef29
+        with:
+          rulesets: 'rulesets/java/quickstart.xml'
+          sourcePath: 'src/main/java'
+          analyzeModifiedFilesOnly: false
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: pmd-report.sarif
 
+  Analysis:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Analyze with SonarQube
+
+        # You can pin the exact commit or the version.
+        # uses: SonarSource/sonarqube-scan-action@v1.1.0
+        uses: SonarSource/sonarqube-scan-action@7295e71c9583053f5bf40e9d4068a0c974603ec8
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Generate a token on SonarQube, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}   # add the URL of your instance to the secrets of this repo with the name SONAR_HOST_URL (Settings > Secrets > Actions > add new repository secret)
+        with:
+          # Additional arguments for the sonarcloud scanner
+          args:
+            # Unique key of your project. You can find it in SonarQube > [my project] > Project Information (top-right menu)
+            # mandatory
+            -Dsonar.projectKey=
+            # Comma-separated paths to directories containing main source files.
+            #-Dsonar.sources= # optional, default is project base directory
+            # When you need the analysis to take place in a directory other than the one from which it was launched
+            #-Dsonar.projectBaseDir= # optional, default is .
+            # Comma-separated paths to directories containing test source files.
+            #-Dsonar.tests= # optional. For more info about Code Coverage, please refer to https://docs.sonarcloud.io/enriching/test-coverage/overview/
+            # Adds more detail to both client and server-side analysis logs, activating DEBUG mode for the scanner, and adding client-side environment variables and system properties to the server-side log of analysis report processing.
+            #-Dsonar.verbose= # optional, default is false
+          
   docker-build:
     name: Build & Push Docker Image
     needs: build-test
